@@ -1,0 +1,67 @@
+<!DOCTYPE html>
+<html>
+<head>
+<meta charset="utf-8">
+<style>
+  @page { size: A4; margin: 1.6cm 1.8cm; }
+  body { font-family: Helvetica; font-size: 10pt; color: #222222; line-height: 1.35; }
+  h1 { font-size: 22pt; margin: 0 0 2pt 0; color: #14213d; }
+  .contact { font-size: 9pt; color: #555555; margin-bottom: 10pt; }
+  h2 { font-size: 11pt; color: #14213d; border-bottom: 1px solid #14213d;
+       padding-bottom: 2pt; margin: 12pt 0 5pt 0; }
+  .row { margin-bottom: 6pt; }
+  .title { font-weight: bold; }
+  .meta { color: #555555; font-size: 9pt; }
+  ul { margin: 2pt 0 0 0; padding-left: 14pt; }
+  li { margin-bottom: 1pt; }
+</style>
+</head>
+<body>
+  <h1>{{ name }}</h1>
+  <div class="contact">
+    {{ [email, phone, location, links] | select | join("  |  ") }}
+  </div>
+
+  {% if summary %}
+  <h2>Summary</h2>
+  <p>{{ summary }}</p>
+  {% endif %}
+
+  {% if skills %}
+  <h2>Skills</h2>
+  <p>{{ skills | join(", ") }}</p>
+  {% endif %}
+
+  {% if experience %}
+  <h2>Experience</h2>
+  {% for e in experience %}
+  <div class="row">
+    <div><span class="title">{{ e.role }}</span>{% if e.org %}, {{ e.org }}{% endif %}</div>
+    {% if e.period %}<div class="meta">{{ e.period }}</div>{% endif %}
+    {% if e.desc %}<ul>{% for line in e.desc.splitlines() if line.strip() %}<li>{{ line.strip() }}</li>{% endfor %}</ul>{% endif %}
+  </div>
+  {% endfor %}
+  {% endif %}
+
+  {% if projects %}
+  <h2>Projects</h2>
+  {% for p in projects %}
+  <div class="row">
+    <div><span class="title">{{ p.title }}</span>{% if p.tech %} <span class="meta">({{ p.tech }})</span>{% endif %}</div>
+    {% if p.desc %}<ul>{% for line in p.desc.splitlines() if line.strip() %}<li>{{ line.strip() }}</li>{% endfor %}</ul>{% endif %}
+  </div>
+  {% endfor %}
+  {% endif %}
+
+  {% if education %}
+  <h2>Education</h2>
+  {% for ed in education %}
+  <div class="row">
+    <div><span class="title">{{ ed.degree }}</span>{% if ed.school %}, {{ ed.school }}{% endif %}</div>
+    {% if ed.period %}<div class="meta">{{ ed.period }}</div>{% endif %}
+    {% if ed.note %}<div>{{ ed.note }}</div>{% endif %}
+  </div>
+  {% endfor %}
+  {% endif %}
+</body>
+</html>

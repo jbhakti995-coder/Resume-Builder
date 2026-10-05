@@ -1,0 +1,117 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Resume Builder</title>
+<style>
+  :root { --ink:#14213d; --paper:#fbfaf7; --line:#d9d6cc; --accent:#2a6f97; }
+  * { box-sizing: border-box; }
+  body { margin:0; background:var(--paper); color:var(--ink);
+         font-family: Georgia, "Times New Roman", serif; line-height:1.5; }
+  main { max-width: 720px; margin: 0 auto; padding: 32px 20px 64px; }
+  h1 { font-size: 2rem; margin: 0 0 4px; }
+  p.lead { margin: 0 0 28px; color:#555; }
+  fieldset { border:1px solid var(--line); border-radius:6px; margin:0 0 22px; padding:16px 18px 18px; background:#fff; }
+  legend { font-weight:bold; padding:0 6px; }
+  label { display:block; font-size:.9rem; margin-top:10px; }
+  input, textarea { width:100%; padding:8px 10px; margin-top:3px; border:1px solid var(--line);
+                    border-radius:4px; font:inherit; background:#fff; }
+  input:focus, textarea:focus, button:focus-visible { outline:2px solid var(--accent); outline-offset:1px; }
+  .grid { display:grid; grid-template-columns:1fr 1fr; gap:0 14px; }
+  .entry { border-top:1px dashed var(--line); margin-top:14px; padding-top:4px; }
+  .entry:first-of-type { border-top:0; margin-top:0; }
+  button { font:inherit; cursor:pointer; border-radius:4px; padding:8px 14px; }
+  .add { background:none; border:1px solid var(--accent); color:var(--accent); margin-top:12px; }
+  .remove { background:none; border:0; color:#9b2226; padding:4px 0; font-size:.85rem; }
+  .submit { background:var(--ink); color:#fff; border:0; padding:12px 22px; font-size:1.05rem; }
+  @media (max-width:560px) { .grid { grid-template-columns:1fr; } }
+</style>
+</head>
+<body>
+<main>
+  <h1>Resume Builder</h1>
+  <p class="lead">Fill in the form and download a one-page PDF resume. Leave any section empty to skip it.</p>
+
+  <form action="/generate" method="post">
+    <fieldset>
+      <legend>Basics</legend>
+      <label>Full name <input name="name" required></label>
+      <div class="grid">
+        <label>Email <input type="email" name="email"></label>
+        <label>Phone <input name="phone"></label>
+        <label>City, State <input name="location"></label>
+        <label>Links (GitHub, LinkedIn) <input name="links"></label>
+      </div>
+      <label>Summary (2 to 3 lines) <textarea name="summary" rows="3"></textarea></label>
+      <label>Skills (separate with commas) <input name="skills" placeholder="Python, SQL, HTML, Git"></label>
+    </fieldset>
+
+    <fieldset id="education">
+      <legend>Education</legend>
+      <div class="entry">
+        <label>Degree <input name="edu_degree[]" placeholder="BCA"></label>
+        <div class="grid">
+          <label>College / University <input name="edu_school[]"></label>
+          <label>Years <input name="edu_period[]" placeholder="2024 - 2027"></label>
+        </div>
+        <label>Note (CGPA, achievements) <input name="edu_note[]"></label>
+        <button type="button" class="remove">Remove</button>
+      </div>
+      <button type="button" class="add" data-target="education">Add education</button>
+    </fieldset>
+
+    <fieldset id="projects">
+      <legend>Projects</legend>
+      <div class="entry">
+        <div class="grid">
+          <label>Project title <input name="proj_title[]"></label>
+          <label>Tech used <input name="proj_tech[]" placeholder="Flask, SQLite"></label>
+        </div>
+        <label>What it does (one point per line) <textarea name="proj_desc[]" rows="3"></textarea></label>
+        <button type="button" class="remove">Remove</button>
+      </div>
+      <button type="button" class="add" data-target="projects">Add project</button>
+    </fieldset>
+
+    <fieldset id="experience">
+      <legend>Experience / Internships</legend>
+      <div class="entry">
+        <div class="grid">
+          <label>Role <input name="exp_role[]"></label>
+          <label>Organisation <input name="exp_org[]"></label>
+        </div>
+        <label>Period <input name="exp_period[]" placeholder="Jun 2026 - Aug 2026"></label>
+        <label>Details (one point per line) <textarea name="exp_desc[]" rows="3"></textarea></label>
+        <button type="button" class="remove">Remove</button>
+      </div>
+      <button type="button" class="add" data-target="experience">Add experience</button>
+    </fieldset>
+
+    <button type="submit" class="submit">Download PDF</button>
+  </form>
+</main>
+
+<script>
+  // Clone the first entry of a section to add another one.
+  document.querySelectorAll(".add").forEach(btn => {
+    btn.addEventListener("click", () => {
+      const section = document.getElementById(btn.dataset.target);
+      const copy = section.querySelector(".entry").cloneNode(true);
+      copy.querySelectorAll("input, textarea").forEach(el => el.value = "");
+      section.insertBefore(copy, btn);
+    });
+  });
+
+  // Remove an entry (keep at least one per section).
+  document.addEventListener("click", e => {
+    if (!e.target.classList.contains("remove")) return;
+    const section = e.target.closest("fieldset");
+    const entries = section.querySelectorAll(".entry");
+    const entry = e.target.closest(".entry");
+    if (entries.length > 1) entry.remove();
+    else entry.querySelectorAll("input, textarea").forEach(el => el.value = "");
+  });
+</script>
+</body>
+</html>
